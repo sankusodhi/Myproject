@@ -333,15 +333,23 @@
 # def user_profile(username):
 #     return f"User {username}"
 
-
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-@app.route("/hello/<name>")
-def hello(name):
-    return render_template("hello.html", person=name)
+@app.route('/')
+def home():
+    return '''
+        <form method="post" action="/hello">
+            <input name="username" placeholder="Enter your name">
+            <input type="submit" value="Submit">
+        </form>
+    '''
 
-if __name__ == "__main__":
+@app.route('/hello', methods=['POST'])
+def hello():
+    username = request.form['username']
+    return render_template("hello.html", person=username)
+
+if __name__ == '__main__':
     app.run(debug=True)
-
