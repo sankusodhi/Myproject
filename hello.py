@@ -333,18 +333,35 @@
 # def user_profile(username):
 #     return f"User {username}"
 
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for, abort
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  
+app.secret_key = 'supersecretkey'
 
 @app.route('/')
 def home():
+    return redirect(url_for('login'))
+
+@app.route('/login')
+def login():
+    abort(401)
+
+@app.errorhandler(401)
+def unauthorized_error(error):
+    return '''
+        <h2>401 Unauthorized</h2>
+        <p>You are not authorized to access this page.</p>
+        <p><a href="/form">Go to Form</a></p>
+    ''', 401
+
+@app.route('/form')
+def form():
     return '''
         <form method="post" action="/hello">
             <input name="username" placeholder="Enter your name">
             <input type="submit" value="Submit">
         </form>
+        <p><a href="/set?user=Sanku">Set Session via GET</a></p>
     '''
 
 @app.route('/hello', methods=['POST'])
@@ -353,9 +370,14 @@ def hello():
     session['username'] = username  
     return render_template("hello.html", person=username)
 
-def set_session(user):
-    session['username'] = user
-    return f"Session set for {user}"
+@app.route('/set')
+def set_session():
+    user = request.args.get('user')
+    if user:
+        session['username'] = user
+        return f"Session set for {user}"
+    else:
+        return "No user provided in query string."
 
 @app.route('/get/')
 def get_session():
@@ -365,7 +387,7 @@ def get_session():
 @app.route('/logout/')
 def logout():
     session.pop('username', None)
-    return "Session cleared. You are logged out."
+    return "Session cleared. You are logged out. <a href='/form'>Go to Form</a>"
 
 if __name__ == '__main__':
     app.run(debug=True)
