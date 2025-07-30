@@ -333,9 +333,10 @@
 # def user_profile(username):
 #     return f"User {username}"
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
+app.secret_key = 'supersecretkey'  
 
 @app.route('/')
 def home():
@@ -349,7 +350,22 @@ def home():
 @app.route('/hello', methods=['POST'])
 def hello():
     username = request.form['username']
+    session['username'] = username  
     return render_template("hello.html", person=username)
+
+def set_session(user):
+    session['username'] = user
+    return f"Session set for {user}"
+
+@app.route('/get/')
+def get_session():
+    username = session.get('username', 'Guest')
+    return f"Logged in as: {username}"
+
+@app.route('/logout/')
+def logout():
+    session.pop('username', None)
+    return "Session cleared. You are logged out."
 
 if __name__ == '__main__':
     app.run(debug=True)
