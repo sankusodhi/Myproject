@@ -329,3 +329,7 @@ app = Flask(__name__)
 def hello_world():
     return "<p>Hello, World!</p>"
 
+@app.route("/user/<username>")
+def user_profile(username):
+    return f"User {username}"
+
