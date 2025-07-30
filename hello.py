@@ -322,14 +322,26 @@
 #     app.run(debug=True)
 
 
-from flask import Flask
+# from flask import Flask
+# app = Flask(__name__)
+
+# @app.route("/")
+# def hello_world():
+#     return "<p>Hello, World!</p>"
+
+# @app.route("/user/<username>")
+# def user_profile(username):
+#     return f"User {username}"
+
+
+from flask import Flask, render_template
+
 app = Flask(__name__)
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+@app.route("/hello/<name>")
+def hello(name):
+    return render_template("hello.html", person=name)
 
-@app.route("/user/<username>")
-def user_profile(username):
-    return f"User {username}"
+if __name__ == "__main__":
+    app.run(debug=True)
 
