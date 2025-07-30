@@ -333,6 +333,9 @@
 # def user_profile(username):
 #     return f"User {username}"
 
+
+
+
 from flask import Flask, render_template, request, session, redirect, url_for, abort
 
 app = Flask(__name__)
@@ -361,23 +364,19 @@ def form():
             <input name="username" placeholder="Enter your name">
             <input type="submit" value="Submit">
         </form>
-        <p><a href="/set?user=Sanku">Set Session via GET</a></p>
     '''
 
 @app.route('/hello', methods=['POST'])
 def hello():
     username = request.form['username']
-    session['username'] = username  
+    session['username'] = username
     return render_template("hello.html", person=username)
 
-@app.route('/set')
+@app.route('/set/')
 def set_session():
-    user = request.args.get('user')
-    if user:
-        session['username'] = user
-        return f"Session set for {user}"
-    else:
-        return "No user provided in query string."
+    session['username'] = 'sanku'
+    return 'Session set!'
+
 
 @app.route('/get/')
 def get_session():
@@ -388,6 +387,10 @@ def get_session():
 def logout():
     session.pop('username', None)
     return "Session cleared. You are logged out. <a href='/form'>Go to Form</a>"
+
+@app.route("/api/user")
+def user_api():
+    return {"name": "Sanku", "language": "Python"}
 
 if __name__ == '__main__':
     app.run(debug=True)
